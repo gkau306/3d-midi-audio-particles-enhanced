@@ -39,3 +39,53 @@ body
     color: white;
     font-family: 'Roboto', sans-serif;
 }
+
+#file-upload-section {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#file-upload-section h3 {
+    color: white;
+    font-family: 'Roboto', sans-serif;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+#file-upload-section p {
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'Roboto', sans-serif;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+#audio-file-input {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    color: white;
+    padding: 10px 15px;
+    font-family: 'Roboto', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#audio-file-input:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+#audio-file-input::file-selector-button {
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    color: white;
+    padding: 5px 10px;
+    margin-right: 10px;
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+}
+
+#audio-file-input::file-selector-button:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}

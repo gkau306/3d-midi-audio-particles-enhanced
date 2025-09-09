@@ -294,20 +294,102 @@ export class GUIAudio {
     this.audioInterfaceController = audioInterfaceController;
     this.state = {
       audioSelected: "",
+      audioMode: "microphone",
+      fileLoaded: false,
+      isPlaying: false,
     };
   }
   async init() {
     const audioDevices = await this.audioInterfaceController.getInputDevices();
-    if (audioDevices.length === 0) return;
-    this.state.audioSelected = audioDevices[0].label;
     this.audioFolder = this.gui.addFolder("Audio");
+    
+    // Audio mode selection
     this.audioFolder
-      .add(this.state, "audioSelected")
-      .options(audioDevices.map((d) => d.label))
-      .name("Audio Input")
-      .onFinishChange(async (val) => {
-        const selectedDevice = audioDevices.filter((d) => d.label === val)[0];
-        this.audioInterfaceController.listenTo(selectedDevice.deviceId);
+      .add(this.state, "audioMode", ["microphone", "file"])
+      .name("Audio Source")
+      .onFinishChange((mode) => {
+        this.audioInterfaceController.setMode(mode);
+        this.#updateAudioControls();
       });
+
+    // Microphone controls
+    if (audioDevices.length > 0) {
+      this.state.audioSelected = audioDevices[0].label;
+      this.micControl = this.audioFolder
+        .add(this.state, "audioSelected")
+        .options(audioDevices.map((d) => d.label))
+        .name("Microphone Input")
+        .onFinishChange(async (val) => {
+          const selectedDevice = audioDevices.filter((d) => d.label === val)[0];
+          this.audioInterfaceController.listenTo(selectedDevice.deviceId);
+        });
+    }
+
+    // File upload controls
+    this.fileControl = this.audioFolder
+      .add({ uploadFile: () => this.#handleFileUpload() }, "uploadFile")
+      .name("Upload Audio File");
+
+    // Playback controls
+    this.playControl = this.audioFolder
+      .add({ playPause: () => this.#togglePlayback() }, "playPause")
+      .name("Play/Pause");
+
+    this.stopControl = this.audioFolder
+      .add({ stop: () => this.#stopPlayback() }, "stop")
+      .name("Stop");
+
+    this.#updateAudioControls();
+  }
+
+  #updateAudioControls() {
+    const isFileMode = this.state.audioMode === "file";
+    const isMicMode = this.state.audioMode === "microphone";
+    
+    if (this.micControl) {
+      this.micControl.__li.style.display = isMicMode ? "block" : "none";
+    }
+    
+    this.fileControl.__li.style.display = isFileMode ? "block" : "none";
+    this.playControl.__li.style.display = isFileMode && this.state.fileLoaded ? "block" : "none";
+    this.stopControl.__li.style.display = isFileMode && this.state.fileLoaded ? "block" : "none";
+  }
+
+  #handleFileUpload() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'audio/*';
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const success = await this.audioInterfaceController.loadAudioFile(file);
+        if (success) {
+          this.state.fileLoaded = true;
+          this.state.isPlaying = true;
+          this.#updateAudioControls();
+          console.log('Audio file loaded and playing successfully');
+        } else {
+          console.error('Failed to load audio file');
+        }
+      }
+    };
+    input.click();
+  }
+
+  #togglePlayback() {
+    if (this.state.isPlaying) {
+      this.audioInterfaceController.pauseAudioFile();
+      this.state.isPlaying = false;
+    } else {
+      this.audioInterfaceController.playAudioFile();
+      this.state.isPlaying = true;
+    }
+  }
+
+  #stopPlayback() {
+    this.audioInterfaceController.stopAudioFile();
+    this.state.isPlaying = false;
+    this.state.fileLoaded = false;
+    this.#updateAudioControls();
   }
 }

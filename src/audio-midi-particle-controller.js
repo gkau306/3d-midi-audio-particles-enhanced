@@ -35,9 +35,15 @@ export class AudioMidiParticlesController {
     try {
       this.audioInterfaceController = new AudioInterfaceController();
       this.audioDevices = await this.audioInterfaceController.getInputDevices();
-      this.audioInterfaceController.listenTo(this.audioDevices[0].deviceId);
+      
+      // Only set up microphone if devices are available
+      if (this.audioDevices.length > 0) {
+        this.audioInterfaceController.listenTo(this.audioDevices[0].deviceId);
+      } else {
+        console.log('No microphone devices found. File upload mode will be available.');
+      }
     } catch (err) {
-      console.log(err);
+      console.log('Audio setup error:', err);
     }
   }
 
@@ -67,6 +73,9 @@ export class AudioMidiParticlesController {
   }
 
   #processAudio() {
+    // Only process audio if we have an active audio source
+    if (!this.audioInterfaceController.analyser) return;
+    
     this.audioInterfaceController.updateAudioInfo();
 
     const freq1Index = this.#hertzToIndex(this.params.freq1);
