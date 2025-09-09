@@ -29,8 +29,8 @@ export class AudioMidiParticlesController {
 
     // Color analysis state
     this.colorAnalysis = {
-      currentColor: new THREE.Color(0xffffff),
-      targetColor: new THREE.Color(0xffffff),
+      currentColor: new THREE.Color(0x4a90e2), // Start with a blue color
+      targetColor: new THREE.Color(0x4a90e2),  // Start with a blue color
       beatDetected: false,
       lastBeatTime: 0,
       energyLevel: 0,
@@ -56,6 +56,10 @@ export class AudioMidiParticlesController {
     );
     await audioMidiParticlesBinder.#setupAudioControls();
     await audioMidiParticlesBinder.#setupMidiControls();
+    
+    // Set initial color
+    particles.setColor(audioMidiParticlesBinder.colorAnalysis.currentColor);
+    
     return audioMidiParticlesBinder;
   }
 
@@ -337,5 +341,10 @@ export class AudioMidiParticlesController {
     
     // Update particle color based on analysis
     this.particles.setColor(this.colorAnalysis.currentColor);
+    
+    // Debug logging (remove in production)
+    if (Math.random() < 0.01) { // Log occasionally
+      console.log('Color Mode:', this.params.colorMode, 'Current Color:', this.colorAnalysis.currentColor.getHexString());
+    }
   }
 }
