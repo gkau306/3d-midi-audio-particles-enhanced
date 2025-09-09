@@ -80,4 +80,8 @@ export class Particles extends THREE.Object3D {
   setMaxDistance(maxDist) {
     this.material.uniforms.maxDistance.value = maxDist;
   }
+
+  setColor(color) {
+    this.material.uniforms.diffuse.value = color;
+  }
 }

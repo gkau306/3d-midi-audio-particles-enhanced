@@ -60,6 +60,53 @@ export class GUIControls {
       .step(0.001)
       .listen()
       .updateDisplay();
+
+    // Color controls
+    this.colorFolder = this.gui.addFolder("Color Analysis");
+    this.colorFolder.open();
+    
+    this.colorFolder
+      .add(this.audioMidiParticlesController.params, "colorMode", ["frequency", "beat", "mood", "custom"])
+      .name("Color Mode")
+      .onFinishChange((mode) => {
+        console.log(`Color mode changed to: ${mode}`);
+      });
+
+    this.colorFolder
+      .add(this.audioMidiParticlesController.params, "colorIntensity")
+      .min(0.1)
+      .max(3.0)
+      .step(0.1)
+      .name("Color Intensity")
+      .listen()
+      .updateDisplay();
+
+    this.colorFolder
+      .add(this.audioMidiParticlesController.params, "colorSpeed")
+      .min(0.1)
+      .max(5.0)
+      .step(0.1)
+      .name("Color Speed")
+      .listen()
+      .updateDisplay();
+
+    this.colorFolder
+      .add(this.audioMidiParticlesController.params, "beatThreshold")
+      .min(0.1)
+      .max(1.0)
+      .step(0.05)
+      .name("Beat Threshold")
+      .listen()
+      .updateDisplay();
+
+    this.colorFolder
+      .add(this.audioMidiParticlesController.params, "moodSensitivity")
+      .min(0.1)
+      .max(2.0)
+      .step(0.1)
+      .name("Mood Sensitivity")
+      .listen()
+      .updateDisplay();
   }
 }
 
